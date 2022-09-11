@@ -52,7 +52,7 @@ class PostsURLTests(TestCase):
         url_names_codes = {
             '/': HTTPStatus.OK,
             f'/group/{self.group.slug}/': HTTPStatus.OK,
-            f'/profile/{self.user.username}/': HTTPStatus.FOUND,
+            f'/profile/{self.user.username}/': HTTPStatus.OK,
             f'/posts/{self.post.pk}/': HTTPStatus.OK,
             '/create/': HTTPStatus.FOUND,
             f'/posts/{self.post.pk}/edit/': HTTPStatus.FOUND
