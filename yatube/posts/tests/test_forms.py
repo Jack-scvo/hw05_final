@@ -54,6 +54,9 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(Post.objects.count(),
                          posts_count + 1, 'Пост не создался')
         self.assertEqual(response.status_code, HTTPStatus.OK)
+        post = Post.objects.get(pk=2)
+        self.assertEqual(post.author, self.user)
+        self.assertEqual(post.group.pk, form_data['group'])
 
     def test_edit_post(self):
         """Тест формы редактирования поста"""

@@ -37,29 +37,17 @@ def profile(request, username):
     """Страница профиля."""
     template = 'posts/profile.html'
     author = get_object_or_404(User, username=username)
-    following = True
-    if request.user.is_authenticated:
-        if author.following.filter(user=request.user).exists():
-            following = True
-        else:
-            following = False
-        posts = author.posts.all()
-        page_obj = paginator(posts, NUM_OF_POSTS, request)
-        context = {
-            'page_obj': page_obj,
-            'author': author,
-            'following': following
-        }
-        return render(request, template, context)
-    else:
-        posts = author.posts.all()
-        page_obj = paginator(posts, NUM_OF_POSTS, request)
-        context = {
-            'page_obj': page_obj,
-            'author': author,
-            'following': following
-        }
-        return render(request, template, context)
+    following = (request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author
+    ).exists())
+    posts = author.posts.all()
+    page_obj = paginator(posts, NUM_OF_POSTS, request)
+    context = {
+        'page_obj': page_obj,
+        'author': author,
+        'following': following
+    }
+    return render(request, template, context)
 
 
 def post_detail(request, post_id):
@@ -148,11 +136,8 @@ def follow_index(request):
 @login_required
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
-    follows = author.following.all()
-    if follows.filter(user=request.user).exists():
-        return redirect('posts:follow_index')
     if author != request.user:
-        Follow.objects.create(
+        Follow.objects.get_or_create(
             user=request.user,
             author=author
         )
